@@ -1,7 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APIClient, RequestsClient
+from rest_framework.test import APIClient, RequestsClient, APIRequestFactory , force_authenticate
 from django.test import TestCase
+from .views import AuthorListCreate
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -17,6 +18,10 @@ class AuthorTests(TestCase):
     def test_create_author(self):
         response =self.client.post(reverse('author-list') , {'name': 'kosiko' , 'nationality' : 'kai bichi'},format = 'json')
         self.assertEqual(response.status_code , status.HTTP_201_CREATED)
+        
+    def test_create_author_error(self):
+        response =self.client.post(reverse('author-list') , { 'nationality' : 'kai bichi'},format = 'json')
+        self.assertEqual(response.status_code , status.HTTP_400_BAD_REQUEST)
         
 class BookListTests(TestCase):
     def setUp(self):
@@ -43,5 +48,17 @@ class BookListTestsWithRequestCLient(TestCase):
     def test_list_books(self):
         response = self.client.get('http://127.0.0.1:8000/api/books/')
         self.assertEqual(response.status_code, 200)
+        
+        
+class AuthorCreateTestFactory(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user = User.objects.create_user(username='testuser12', email = "test@gmail.com" , password ='testuser12')
+        
+    def test_create_author_with_factory(self):
+        request = self.factory.post('/authors/', {'name': 'kosiko2' , 'nationality' : 'kai bichi2'},format = 'json')
+        force_authenticate(request , user = self.user)
+        response = AuthorListCreate.as_view()(request)
+        self.assertEqual(response.status_code, 201)
         
         
