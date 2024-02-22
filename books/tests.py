@@ -63,6 +63,29 @@ def test_author_pagination():
     assert response.json()['next'] is not None
      
 
+@pytest.mark.django_db
+def test_filter_authors():
+    client = APIClient()
+    
+    Author.objects.create(name= f"kosarioni", nationality = f"geo3" )
+    Author.objects.create(name= f"kosa", nationality = f"geo" )
+    Author.objects.create(name= f"kotiko", nationality = f"geo" )
+    Author.objects.create(name= f"kosarioaaani", nationality = f"geo2" )
+    Author.objects.create(name= f"kosarfdsgfeioni", nationality = f"geo" )
+    
+    response = client.get('/api/authors/', {'nationality' :'georgian'})
+    authors = response.json()['results']
+    
+    assert response.status_code == 200
+    assert all(author['nationality'] =='geo' for author in authors)
+    
+    
+
+    
+    
+  
+  
+    
 
 #  django tests
 # class AuthorTests(TestCase):

@@ -7,6 +7,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 class AuthorListCreate(generics.ListCreateAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['nationality']
     
 class BookListCreate(generics.ListCreateAPIView):
     queryset = Book.objects.all()
