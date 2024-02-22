@@ -2,6 +2,7 @@ from rest_framework import generics
 from .models import Author ,Book
 from .serializers import AuthorSerializer , BookSerializer
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 
 class AuthorListCreate(generics.ListCreateAPIView):
     queryset = Author.objects.all()
@@ -11,3 +12,5 @@ class BookListCreate(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['Publication_date']

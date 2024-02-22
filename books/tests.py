@@ -46,7 +46,22 @@ def test_book_creation():
     
     assert response.status_code == 201
 
-
+@pytest.mark.django_db
+def test_author_pagination():
+    client = APIClient()
+    
+    for i in range(23):
+        Author.objects.create(name= f"Author {i}", nationality = f"nationality {i}" )
+    
+    response =client.get('/api/authors/')
+    
+    assert response.status_code == 200
+    
+    assert len(response.json()['results']) == 10
+    
+    assert 'next' in response.json()
+    assert response.json()['next'] is not None
+     
 
 
 #  django tests
